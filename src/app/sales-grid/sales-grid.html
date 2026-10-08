@@ -1,0 +1,14 @@
+<table class = "container">
+    <tr>
+        <th class="mt-3 mb-3">Name</th>
+        <th class="mt-3 mb-3">Age</th>
+        <th class="mt-3 mb-3">Email</th>
+        <th class="mt-3 mb-3">Sales</th>
+    </tr>
+    <tr *ngFor="let grid of salesPersonList">
+        <td>{{ grid.firstName }}</td>
+        <td>{{ grid.lastName }}</td>
+        <td>{{ grid.email }}</td>
+        <td>{{ grid.sales }}</td>
+    </tr>
+</table>

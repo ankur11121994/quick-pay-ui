@@ -1,35 +1,19 @@
-<table class = "table table-hover">
-    
-    <thead class = "table-dark">
-        <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Email</th>
-        <th>Price</th>
-        <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let grid of products | async">
-        <ng-container *ngIf="editingProductId === grid.id && editProduct as draft; else readOnlyRow">
-            <td><input aria-label="Product name" [(ngModel)]="draft.productName"></td>
-            <td><input aria-label="Product description" [(ngModel)]="draft.productDescription"></td>
-            <td><input aria-label="Email" type="email" [(ngModel)]="draft.email"></td>
-            <td><input aria-label="Price" type="number" min="0" [(ngModel)]="draft.productPrice"></td>
-            <td>
-                <button type="button" (click)="saveProduct()" [disabled]="savingProductId === grid.id">Save</button>
-                <button type="button" (click)="cancelEditing()" [disabled]="savingProductId === grid.id">Cancel</button>
-            </td>
-        </ng-container>
-        <ng-template #readOnlyRow>
-            <td>{{ grid.productName }}</td>
-            <td>{{ grid.productDescription }}</td>
-            <td>{{ grid.email }}</td>
-            <td>{{ grid.productPrice | currency:'INR' }}</td>
-            <td><button type="button" (click)="startEditing(grid)" [disabled]="grid.id === undefined">Edit</button></td>
-        </ng-template>
-    </tr>
-    </tbody>
-</table>
-<p *ngIf="loadError |  async" role="alert">Products could not be loaded. Check the API connection and try again.</p>
-<p *ngIf="saveError | async" role="alert">Product could not be saved. Your changes are still available to retry.</p>
+<div class="main-content">
+    <div class=" section-content section-content-p30">
+        <div class="container-fluid">
+            <div class="product-grid">
+                <div *ngFor="let grid of products | async" class="product-grid-item">
+                    <div class="product-box">
+                        <img src={{grid.imageUrl}} class="img-responsive">
+                        <h1>{{ grid.productName }}</h1>
+                        <div class="price">{{ grid.productPrice | currency:'INR' }}</div>
+                        <a href="#" class="primary-btn" (click)="addToCart(grid)">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<p *ngIf="loadError" role="alert">Products could not be loaded. Check the API connection and try again.</p>
+<p *ngIf="saveError" role="alert">Product could not be saved. Your changes are still available to retry.</p>

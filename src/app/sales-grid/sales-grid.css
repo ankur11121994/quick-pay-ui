@@ -1,0 +1,13 @@
+.product-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 24px;
+}
+
+.product-grid-item {
+	min-width: 0;
+}
+
+.product-grid-item .product-box {
+	margin-bottom: 0;
+}

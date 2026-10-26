@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Product } from '../product';
 import { HttpService } from '../shared/http-service';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { Pageable } from '../Pageable';
 
 @Component({
   selector: 'app-sales-grid',
@@ -11,23 +13,36 @@ import { map } from 'rxjs';
   templateUrl: './sales-grid.html',
 })
 export class SalesGrid implements OnInit {
-  constructor(private httpService: HttpService) { }
+  constructor(private httpService: HttpService, private activeRoute: ActivatedRoute) { }
   products: Observable<Product[]> = new Observable<Product[]>();
   loadError = false;
   saveError = false;
   editingProductId: number | string | null = null;
   editProduct: Product | null = null;
   savingProductId: number | string | null = null;
-
+  categoryId: number = 0;
   ngOnInit(): void {
-    this.httpService.get<Product[]>('/api/v1/products').pipe(data => {
-      return this.products = data;
-    }, () => {
-      this.loadError = true;
-      return this.products;
-    })
+    this.products = this.activeRoute.paramMap.pipe(
+      switchMap(params => {
+        this.categoryId = params.has('id') ? Number(params.get('id')) : 0;
+        const url = this.categoryId === 0
+          ? '/api/v1/products'
+          : `/api/v1/products/category/${this.categoryId}?page=1&size=10`;
+        this.loadError = false;
+        return this.httpService.get<Pageable>(url).pipe(
+          map(pageable => pageable.items),
+          catchError(() => {
+            this.loadError = true;
+            return of([]);
+          }),
+        );
+      }),
+    );
   }
 
+  addToCart(product: Product) : void {
+    //add to cart logic here
+  }
   startEditing(product: Product): void {
     if (product.id === undefined) {
       return;
@@ -54,7 +69,7 @@ export class SalesGrid implements OnInit {
     const changes = {
       productName: draft.productName,
       productDescription: draft.productDescription,
-      email: draft.email,
+      //email: draft.email,
       productPrice: draft.productPrice,
     };
 
